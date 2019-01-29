@@ -1,6 +1,7 @@
 package android.bignerdranch.com;
 
 import android.media.Image;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,9 +11,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX = "index";
     private Button mTrueButton;
     private Button mFalseButton;
     private ImageButton mNextButton;
@@ -26,8 +31,18 @@ public class MainActivity extends AppCompatActivity {
         new Question(R.string.question_americas, true),
         new Question(R.string.question_asia, true)
     };
+    //0 is null, 1 is true, 2 is false.
+    private ArrayList<Integer> mAnswerBank = new ArrayList<Integer>(
+            Arrays.asList(0,0,0,0,0,0));
 
     private int mCurrentIndex = 0;
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "onCreate(Bundle)");
+        if (savedInstanceState != null){
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+        }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
-        updateQuestion();
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -66,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+//                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
                 updateQuestion();
             }
         });
@@ -77,11 +94,21 @@ public class MainActivity extends AppCompatActivity {
                 updateQuestion();
             }
         });
+        updateQuestion();
     }
 
     private void updateQuestion() {
+        Log.d(TAG, "Updating question text", new Exception());
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+        if (mAnswerBank.get(mCurrentIndex) != 0){
+            mTrueButton.setEnabled(false);
+            mFalseButton.setEnabled(false);
+        }
+        else {
+            mTrueButton.setEnabled(true);
+            mFalseButton.setEnabled(true);
+        }
     }
 
     private void checkAnswer(boolean userPressedTrue){
@@ -90,11 +117,32 @@ public class MainActivity extends AppCompatActivity {
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            mAnswerBank.set(mCurrentIndex % mQuestionBank.length, 1);
+
         } else {
             messageResId = R.string.incorrect_toast;
+            mAnswerBank.set(mCurrentIndex % mQuestionBank.length, 2);
         }
-
+        if (mAnswerBank.get(mCurrentIndex) != 0){
+            mTrueButton.setEnabled(false);
+            mFalseButton.setEnabled(false);
+        }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+        if (!mAnswerBank.contains(0)){
+            gradeQuiz();
+        }
+    }
+
+    private void gradeQuiz() {
+        double totalRight = 0;
+        for (int a:
+             mAnswerBank) {
+            if (a == 1)
+                totalRight++;
+        }
+        double percentCalc = (totalRight / mAnswerBank.size()) * 100;
+        String s = "You got a " + percentCalc + "%!";
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
     @Override

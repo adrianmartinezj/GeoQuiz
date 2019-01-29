@@ -17,21 +17,21 @@
 
 <!--</android.support.constraint.ConstraintLayout>-->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/question_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:padding="24dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
         android:orientation="horizontal">
 
         <Button
@@ -58,13 +58,14 @@
         android:id="@+id/prev_button"
         android:src="@drawable/arrow_left"
         android:contentDescription="@string/prev_button"/>
+    </LinearLayout>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/next_button"
         android:src="@drawable/arrow_right"
+        android:layout_gravity="bottom|right"
         android:contentDescription="@string/next_button"/>
 
-    </LinearLayout>
-</LinearLayout>
+</FrameLayout>
