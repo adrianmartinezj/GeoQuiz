@@ -1,5 +1,6 @@
 package android.bignerdranch.com;
 
+import android.content.Intent;
 import android.media.Image;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_INDEX = "index";
     private Button mTrueButton;
     private Button mFalseButton;
+    private Button mCheatButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
     private TextView mQuestionTextView;
@@ -85,6 +87,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
                 updateQuestion();
+            }
+        });
+        mCheatButton = (Button) findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Start CheatActivity
+                Intent intent = new Intent(MainActivity.this, CheatActivity.class);
+                startActivity(intent);
             }
         });
         mQuestionTextView.setOnClickListener(new View.OnClickListener(){
