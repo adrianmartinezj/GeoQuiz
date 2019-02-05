@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String ANSWER_BANK = "answer_bank";
     private static final int REQUEST_CODE_CHEAT = 0;
     private Button mTrueButton;
     private Button mFalseButton;
@@ -45,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putIntegerArrayList(ANSWER_BANK, mAnswerBank);
     }
 
     @Override
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate(Bundle)");
         if (savedInstanceState != null){
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mAnswerBank = savedInstanceState.getIntegerArrayList(ANSWER_BANK);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mQuestionBank.length + mCurrentIndex - 1) % mQuestionBank.length;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -147,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (mIsCheater) {
             messageResId = R.string.judgment_toast;
+            mAnswerBank.set(mCurrentIndex % mQuestionBank.length, 3);
         } else {
             if (userPressedTrue == answerIsTrue) {
                 messageResId = R.string.correct_toast;
