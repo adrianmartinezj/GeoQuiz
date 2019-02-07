@@ -22,9 +22,13 @@ public class CheatActivity extends AppCompatActivity {
     private static final String EXTRA_ANSWER_SHOWN =
             "com.bignerdranch.android.geoquiz.answer_shown";
 
+    private static final String API_LEVEL =
+             Integer.toString(Build.VERSION.SDK_INT);
+
     private boolean mAnswerIsTrue;
 
     private TextView mAnswerTextView;
+    private TextView mAPITextView;
     private Button mShowAnswerButton;
 
     public static Intent newIntent(Context packageContext,
@@ -43,6 +47,8 @@ public class CheatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
 
+        mAPITextView = (TextView) findViewById(R.id.api_text_view);
+
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
@@ -58,21 +64,27 @@ public class CheatActivity extends AppCompatActivity {
                 }
                 setAnswerShownResult(true);
 
-                int cx = mShowAnswerButton.getWidth() / 2;
-                int cy = mShowAnswerButton.getHeight() / 2;
-                float radius = mShowAnswerButton.getWidth();
-                Animator anim = ViewAnimationUtils
-                        .createCircularReveal(mShowAnswerButton, cx, cy, radius, 0);
-                anim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        mShowAnswerButton.setVisibility(View.INVISIBLE);
-                    }
-                });
-                anim.start();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    int cx = mShowAnswerButton.getWidth() / 2;
+                    int cy = mShowAnswerButton.getHeight() / 2;
+                    float radius = mShowAnswerButton.getWidth();
+                    Animator anim = ViewAnimationUtils
+                            .createCircularReveal(mShowAnswerButton, cx, cy, radius, 0);
+                    anim.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            mShowAnswerButton.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    anim.start();
+                } else {
+                    mShowAnswerButton.setVisibility(View.INVISIBLE);
+                }
             }
         });
+
+        mAPITextView.setText(mAPITextView.getText() + API_LEVEL);
     }
 
     private void setAnswerShownResult(boolean isAnswerShown) {
