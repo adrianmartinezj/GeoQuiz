@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int mCurrentIndex = 0;
     private boolean mIsCheater;
+    private int mCheatCount = 3;
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -102,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Start CheatActivity
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-                Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue);
+                int cheatCount = mCheatCount;
+                Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue, cheatCount);
                 startActivityForResult(intent, REQUEST_CODE_CHEAT);
             }
         });
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         mIsCheater = CheatActivity.wasAnswerShown(data);
+        mCheatCount = CheatActivity.getCheatCount(data);
     }
 
     private void updateQuestion() {

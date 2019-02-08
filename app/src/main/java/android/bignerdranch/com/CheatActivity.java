@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Button;
@@ -37,9 +38,10 @@ public class CheatActivity extends AppCompatActivity {
     private Button mShowAnswerButton;
 
     public static Intent newIntent(Context packageContext,
-                                   boolean answerIsTrue){
+                                   boolean answerIsTrue, int cheatCount){
         Intent intent = new Intent(packageContext, CheatActivity.class);
         intent.putExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue);
+        intent.putExtra(CHEAT_COUNT, cheatCount);
         return intent;
     }
 
@@ -47,9 +49,13 @@ public class CheatActivity extends AppCompatActivity {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
 
-    public static int cheatCount(Intent result){
-        return result.getIntExtra(CHEAT_COUNT, 3);
+    public static int getCheatCount(Intent result){
+        return  result.getIntExtra(CHEAT_COUNT, 3);
     }
+
+//    public static int cheatCount(Intent result){
+//        return result.getIntExtra(CHEAT_COUNT, 3);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +68,7 @@ public class CheatActivity extends AppCompatActivity {
 
         mCheatCount = getIntent().getIntExtra(CHEAT_COUNT, 3);
 
+        Log.d("COMM", Integer.toString(mCheatCount));
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
 
         mShowAnswerButton = (Button) findViewById(R.id.show_answer_button);
@@ -74,8 +81,10 @@ public class CheatActivity extends AppCompatActivity {
                     } else {
                         mAnswerTextView.setText(R.string.false_button);
                     }
-                    setAnswerShownResult(true);
                     mCheatCount--;
+                    Log.d("COMM", "Changed .. " + Integer.toString(mCheatCount));
+
+                    setAnswerShownResult(true, mCheatCount);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         int cx = mShowAnswerButton.getWidth() / 2;
                         int cy = mShowAnswerButton.getHeight() / 2;
@@ -101,9 +110,10 @@ public class CheatActivity extends AppCompatActivity {
         mAPITextView.setText(mAPITextView.getText() + API_LEVEL);
     }
 
-    private void setAnswerShownResult(boolean isAnswerShown) {
+    private void setAnswerShownResult(boolean isAnswerShown, int cheatCount) {
         Intent data = new Intent();
-        (data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown)).putExtra(CHEAT_COUNT, mCheatCount);
+        data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
+        data.putExtra(CHEAT_COUNT, cheatCount);
         setResult(RESULT_OK,   data);
     }
 }
